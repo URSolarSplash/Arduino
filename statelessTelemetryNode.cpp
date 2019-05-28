@@ -70,6 +70,7 @@ update()
 		if(rxIndex>=16){
 			if(validateChecksum(rxPacket)==0xFF){
            unpack();
+					 lastRx = millis(); 
       }
 			rxIndex=0;
 		}
@@ -79,6 +80,10 @@ update()
 		sendData();
 		lastSent = millis();
 	}
+
+	//handle stale data
+	dataTimeout();
+	
 }
 
 void
@@ -110,6 +115,13 @@ unpack()
   throt = rxPacket[2]<<8 | rxPacket[1];
 }
 
+void 
+AlltraxNode::
+dataTimeout()
+{
+	if(millis()-lastRx >= 500)
+		throt = 0;
+}
 
 void
 VescNode::
@@ -140,6 +152,14 @@ unpack()
 	throt = rxPacket[2]<<8|rxPacket[1];
 }
 
+void 
+VescNode::
+dataTimeout()
+{
+	if(millis()-lastRx >= 500)
+		throt =0;
+}
+
 void
 MotorBoardNode::
 pack(void *p)
@@ -159,6 +179,10 @@ pack(void *p)
 void
 MotorBoardNode::
 unpack(){}
+
+void
+MotorBoardNode::
+dataTimeout(){}
 
 void
 GPSIMUNode::
@@ -200,6 +224,10 @@ GPSIMUNode::
 unpack(){}
 
 void
+GPSIMUNode::
+dataTimeout() {}
+
+void
 ThrottleNode::
 pack(void *p)
 {
@@ -221,8 +249,14 @@ void
 ThrottleNode::
 unpack(){}
 
+void
+ThrottleNode::
+dataTimeout(){}
 
-void SolarNode::pack(void *p){
+void 
+SolarNode::
+pack(void *p)
+{
   Packet* packets = (Packet*)(p);
   packets[0].startByte = 0xF0;
   uint32_t *p32 = (uint32_t*) (packets[0].data);
@@ -239,3 +273,7 @@ void SolarNode::pack(void *p){
 void
 SolarNode::
 unpack(){}
+
+void
+SolarNode::
+dataTimeout(){}

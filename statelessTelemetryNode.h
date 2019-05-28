@@ -29,9 +29,11 @@ class StatelessTelemetryNode{
 		uint8_t* rxPacket;
 		uint8_t rxIndex;
 		unsigned long lastSent;
+		unsigned long lastRx;
 		unsigned long sendInterval;
 		virtual void pack(void *p);
     virtual void unpack();
+		virtual void dataTimeout();
 		void setPacketNum(uint8_t id);
 		void sendData();
 
@@ -46,6 +48,7 @@ class StatelessTelemetryNode{
 		void begin(long baudrate);
 		uint8_t getDeviceID() const { return deviceID; };
 		uint8_t getNumPackets() const { return numPackets; };
+		unsigned long getlastRx() { return lastRx; };
 };
 
 class AlltraxNode : public StatelessTelemetryNode {
@@ -53,6 +56,7 @@ class AlltraxNode : public StatelessTelemetryNode {
 		const uint8_t PACKET_START = 0xF0;
 		void pack(void *p);
     void unpack();
+		void dataTimeout();
   public:
     uint16_t throt;
     uint16_t diodeTemp;
@@ -70,6 +74,7 @@ class VescNode : public StatelessTelemetryNode {
 		const uint8_t PACKET_START = 0xF0;
 		void pack(void *p);
 		void unpack();
+		void dataTimeout();
 	public:
 		uint16_t throt;
 		uint16_t fetTemp;
@@ -87,6 +92,7 @@ class MotorBoardNode : public StatelessTelemetryNode {
 		const uint8_t PACKET_START = 0xF0;
 		void pack(void *p);
 		void unpack();
+		void dataTimeout();
 	public:
 		float motorTemp;
 		uint32_t motorRPM;
@@ -100,6 +106,7 @@ class GPSIMUNode : public StatelessTelemetryNode {
 		const uint8_t PACKET_START = 0xF0;
 		void pack(void *p);
 		void unpack();
+		void dataTimeout();
 	public:
 		float imuPitch;
 		float imuRoll;
@@ -118,6 +125,7 @@ class ThrottleNode : public StatelessTelemetryNode{
 		const uint8_t PACKET_START = 0xF0;
 		void pack(void *p);
 		void unpack();
+		void dataTimeout();
 	public:
 		uint16_t throt;
 		ThrottleNode(Serial_ *serialPort, unsigned long sendInterval)
@@ -129,6 +137,7 @@ class SolarNode : public StatelessTelemetryNode{
 	 const uint8_t PACKET_START = 0xF0;
 	 void pack(void *p);
 	 void unpack();
+	 void dataTimeout();
  public:
 	 float outCurrent1;
 	 float outCurrent2;
