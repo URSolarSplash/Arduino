@@ -101,6 +101,23 @@ class MotorBoardNode : public StatelessTelemetryNode {
 			: StatelessTelemetryNode(DEVICE_MOTOR_BOARD, serialPort, sendInterval){};
 };
 
+class BatteryNode : public StatelessTelemetryNode {
+	private:
+		const uint8_t PACKET_START = 0xF0;
+		void pack(void *p);
+		void unpack();
+		void dataTimeout();
+	public:
+		float batteryVoltage;
+		float batteryCurrent;
+		float batteryPower;
+		float batteryTimeRemaining;
+		float batteryConsumedAh;
+		float batteryStateOfCharge;
+		BatteryNode(Serial_ *serialPort, unsigned long sendInterval)
+			: StatelessTelemetryNode(DEVICE_BATTERY_BOARD, serialPort, sendInterval){};
+};
+
 class GPSIMUNode : public StatelessTelemetryNode {
 	private:
 		const uint8_t PACKET_START = 0xF0;

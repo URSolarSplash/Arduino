@@ -31,6 +31,7 @@ setPacketNum(uint8_t id)
 			numPackets = 1;
       break;
     case DEVICE_GPS_IMU:
+		case DEVICE_BATTERY_BOARD:
       numPackets = 2;
       break;
     default:
@@ -185,6 +186,45 @@ MotorBoardNode::
 dataTimeout(){}
 
 void
+BatteryNode::
+pack(void *p)
+{
+	Packet* packets = (Packet*)(p);
+	uint32_t *voltage32 = (uint32_t*) (&batteryVoltage);
+	uint32_t *current32 = (uint32_t*) (&batteryCurrent);
+	uint32_t *power32 = (uint32_t*) (&batteryPower);
+	uint32_t *timeRemaining32 = (uint32_t*) (&batteryTimeRemaining);
+	uint32_t *consumed32 = (uint32_t*) (&batteryConsumedAh);
+	uint32_t *stateOfCharge32 = (uint32_t*) (&batteryStateOfCharge);
+	
+	//Pack first packet
+	packets[0].startByte = 0xF0;
+	uint32_t *p32_1 = (uint32_t*) (packets[0].data);
+	p32_1[0] = voltage32[0];
+	p32_1[1] = current32[0];
+	p32_1[2] = power32[0];
+	packets[0].metaData = (0xF0&deviceID) << 4;
+	packets[0].checksum = _checksum(&packets[0]);
+
+	//Pack second packet
+	packets[1].startByte = 0xF0;
+	uint32_t *p32_2 = (uint32_t*) (packets[1].data);
+	p32_2[0] = timeRemaining32[0];
+	p32_2[1] = consumed32[0];
+	p32_2[2] = stateOfCharge32[0];
+	packets[1].metaData = ((0xF0&deviceID) <<4)|0x01;
+	packets[1].checksum = _checksum(&packets[1]);
+}
+
+void
+BatteryNode::
+unpack(){}
+
+void
+BatteryNode::
+dataTimeout(){}
+
+void
 GPSIMUNode::
 pack(void *p)
 {
@@ -215,7 +255,7 @@ pack(void *p)
 	p32_2[2] = speedKnots32[0];
 	uint8_t* p8_2 = (uint8_t*)(&p32_2[3]);
 	p8_2[0] = heading;
-	packets[1].metaData=((0x0F&deviceID) << 4) & 0x01;
+	packets[1].metaData=((0x0F&deviceID) << 4) | 0x01;
 	packets[1].checksum = _checksum(&packets[1]);
 }
 
