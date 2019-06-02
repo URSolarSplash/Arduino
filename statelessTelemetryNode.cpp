@@ -126,9 +126,10 @@ void
 AlltraxNode::
 dataTimeout()
 {
-	if(millis()-lastRx >= 500)
+	if(millis()-lastRx >= 500){
 		throt = 0;
 		enable = 0;
+	}
 }
 
 void
@@ -160,7 +161,7 @@ unpack()
 	throt = rxPacket[2]<<8|rxPacket[1];
 }
 
-void 
+void
 VescNode::
 dataTimeout()
 {
@@ -203,7 +204,7 @@ pack(void *p)
 	uint32_t *timeRemaining32 = (uint32_t*) (&batteryTimeRemaining);
 	uint32_t *consumed32 = (uint32_t*) (&batteryConsumedAh);
 	uint32_t *stateOfCharge32 = (uint32_t*) (&batteryStateOfCharge);
-	
+
 	//Pack first packet
 	packets[0].startByte = 0xF0;
 	uint32_t *p32_1 = (uint32_t*) (packets[0].data);
@@ -298,7 +299,7 @@ void
 ThrottleNode::
 dataTimeout(){}
 
-void 
+void
 SolarNode::
 pack(void *p)
 {
