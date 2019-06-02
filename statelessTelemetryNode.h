@@ -59,6 +59,7 @@ class AlltraxNode : public StatelessTelemetryNode {
 		void dataTimeout();
   public:
     uint16_t throt;
+	uint16_t enable;
     uint16_t diodeTemp;
     uint16_t inVoltage;
     uint16_t outCurrent;
@@ -145,6 +146,9 @@ class ThrottleNode : public StatelessTelemetryNode{
 		void dataTimeout();
 	public:
 		uint16_t throt;
+		uint8_t enable;
+		uint8_t mode;
+		uint8_t config;
 		ThrottleNode(Serial_ *serialPort, unsigned long sendInterval)
 		 : StatelessTelemetryNode(DEVICE_THROTTLE, serialPort,sendInterval){};
 };

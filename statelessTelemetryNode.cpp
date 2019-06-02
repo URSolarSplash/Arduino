@@ -70,12 +70,12 @@ update()
 			byte inByte = _serial->read();
 			if(inByte ==0xF0)
 				rxPacket[rxIndex++] = inByte;
-		}else {
+		} else {
 			rxPacket[rxIndex++]=_serial->read();
 			if(rxIndex>=16){
 				if(validateChecksum(rxPacket)==0xFF){
 					unpack();
-					lastRx = millis(); 
+					lastRx = millis();
 				}
 				rxIndex=0;
 			}
@@ -119,14 +119,16 @@ AlltraxNode::
 unpack()
 {
   throt = rxPacket[2]<<8 | rxPacket[1];
+  enable = rxPacket[3];
 }
 
-void 
+void
 AlltraxNode::
 dataTimeout()
 {
 	if(millis()-lastRx >= 500)
 		throt = 0;
+		enable = 0;
 }
 
 void
@@ -279,13 +281,11 @@ pack(void *p)
 	Packet* packets = (Packet*)(p);
 	packets[0].startByte=0xF0;
 	uint16_t* p16 = (uint16_t*) (packets[0].data);
+	uint8_t *p8 = (uint8_t*)(&p16[1]);
 	p16[0] = throt;
-	p16[1] = 0x00;
-	p16[2] = 0x00;
-	p16[3] = 0x00;
-	p16[4] = 0x00;
-	p16[5] = 0x00;
-	p16[6] = 0x00;
+	p8[0] = enable;
+	p8[1] = mode;
+	p8[2] = config;
 	packets[0].metaData=(0x0F&deviceID) << 4;
 	packets[0].checksum = _checksum(&packets[0]);
 }
