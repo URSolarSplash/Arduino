@@ -66,16 +66,22 @@ update()
 {
 	//read
 	if(_serial->available()>0){
-		rxPacket[rxIndex]=_serial->read();
-		rxIndex++;
-		if(rxIndex>=16){
-			if(validateChecksum(rxPacket)==0xFF){
-           unpack();
-					 lastRx = millis(); 
-      }
-			rxIndex=0;
+		if(rxIndex == 0){
+			byte inByte = _serial->read();
+			if(inByte ==0xF0)
+				rxPacket[rxIndex++] = inByte;
+		}else {
+			rxPacket[rxIndex++]=_serial->read();
+			if(rxIndex>=16){
+				if(validateChecksum(rxPacket)==0xFF){
+					unpack();
+					lastRx = millis(); 
+				}
+				rxIndex=0;
+			}
 		}
 	}
+
 	//write
 	if(millis() - lastSent >= sendInterval){
 		sendData();
@@ -84,7 +90,6 @@ update()
 
 	//handle stale data
 	dataTimeout();
-	
 }
 
 void
