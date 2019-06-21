@@ -29,7 +29,7 @@ setPacketNum(uint8_t id)
     case DEVICE_MOTOR_BOARD:
     case DEVICE_THROTTLE:
 			numPackets = 1;
-      break;
+			break;
     case DEVICE_GPS_IMU:
 		case DEVICE_BATTERY_BOARD:
       numPackets = 2;
